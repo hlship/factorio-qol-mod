@@ -1,7 +1,7 @@
 (ns build
   (:require [babashka.fs :as fs]
             [pod.babashka.fswatcher :as fw]
-            [babashka.process :refer [shell]]))
+            [babashka.process :as p]))
 
 (defn clean []
   (fs/delete-tree "out"))
@@ -15,9 +15,14 @@
                         (-> f
                             fs/strip-ext
                             fs/file-name)
-                        ".lua")]
-      (println "Compiling" (str f) "...")
-      (shell {:out out-path} "fennel --correlate --compile" (str f))))
+                        ".lua")
+          in-path (str f)]
+      (println "Compiling" in-path "...")
+      (let [proc (p/process {:out out-path
+                             :inherit true} "fennel --correlate --compile" in-path)
+            exit (-> proc deref :exit)]
+        (when-not (zero? exit)
+          (println (str "Error compiling " in-path ":" exit)) ) )))
   (println "Copying resources ...")
   (fs/copy-tree "resources" "out/lua" {:replace-existing true}))
 
@@ -29,7 +34,6 @@
   []
   (compile-to-lua)
   (let [f (fn [event]
-            (prn :event event)
             (compile-to-lua))]
     (fw/watch "src" f)
     (fw/watch "resources" f))
