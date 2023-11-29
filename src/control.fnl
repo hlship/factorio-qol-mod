@@ -20,6 +20,18 @@
         (table.insert result value)))
     result))
 
+(fn modify-inserter [box inserter recipe]
+  (let [behavior (inserter.get_or_create_control_behavior)
+        condition behavior.circuit_condition]
+    (debug {:modify-inserter (entity-id inserter) : condition})
+    (inserter.connect_neighbour {:wire defines.wire_type.green
+                                 :target_entity box})
+    (tset behavior :circuit_mode_of_operation
+          defines.control_behavior.inserter.circuit_mode_of_operation.enable_disable)
+    (tset behavior :circuit_condition
+          {:condition {:first_signal {:type :item :name recipe.name}
+                       :constant 100}})))
+
 (fn modify-box [player box inserter]
   (let [recipe (inserter.pickup_target.get_recipe)]
     (when recipe
@@ -27,7 +39,8 @@
       (player.create_local_flying_text {:text [""
                                                "Filter: "
                                                recipe.localised_name]
-                                        :position box.position}))))
+                                        :position box.position})
+      (modify-inserter box inserter recipe))))
 
 (fn on-build [event]
   (let [box event.created_entity
