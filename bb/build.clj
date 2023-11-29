@@ -33,7 +33,7 @@
 (defn watch
   []
   (compile-to-lua)
-  (let [f (fn [event]
+  (let [f (fn [_event]
             (compile-to-lua))]
     (fw/watch "src" f)
     (fw/watch "resources" f))
