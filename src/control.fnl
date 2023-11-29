@@ -91,6 +91,4 @@
 (script.on_event defines.events.on_built_entity on-build
                  [{:filter :name :name :logistic-chest-storage}])
 
-;; Export nothing
-; {}
 
