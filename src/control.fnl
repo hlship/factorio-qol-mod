@@ -48,6 +48,7 @@
             {:condition {:first_signal {:type :item :name recipe.name}
                          :constant new-target}})
       ;; Provide an alert to the player
+      (player.play_sound {:path "utility/wire_connect_pole"})
       (player.create_local_flying_text {:text [""
                                                recipe.localised_name
                                                " < "
@@ -91,5 +92,5 @@
                  [{:filter :name :name :logistic-chest-storage}])
 
 ;; Export nothing
-{}
+; {}
 
