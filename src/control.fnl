@@ -20,27 +20,51 @@
         (table.insert result value)))
     result))
 
-(fn modify-inserter [box inserter recipe]
-  (let [behavior (inserter.get_or_create_control_behavior)
-        condition behavior.circuit_condition]
-    (debug {:modify-inserter (entity-id inserter) : condition})
-    (inserter.connect_neighbour {:wire defines.wire_type.green
-                                 :target_entity box})
-    (tset behavior :circuit_mode_of_operation
-          defines.control_behavior.inserter.circuit_mode_of_operation.enable_disable)
-    (tset behavior :circuit_condition
-          {:condition {:first_signal {:type :item :name recipe.name}
-                       :constant 100}})))
+(fn modify-inserter [player box inserter recipe]
+  ;; Don't modify inserters that already have any circuit connections
+  ;; (inserters do seem to start with a default behavior)
+  (when (and (= 0 (length inserter.circuit_connected_entities.green))
+             (= 0 (length inserter.circuit_connected_entities.red)))
+    (let [behavior (inserter.get_or_create_control_behavior)
+          inventory (box.get_inventory defines.inventory.chest)
+          bar (inventory.get_bar)
+          stack-size box.storage_filter.stack_size
+          stored-amount (inventory.get_item_count recipe.name)
+          ;; How many should we allow the inserter to move over?  If there's limit
+          ;; via inventory bar, use that.
+          new-target (if (<= bar stack-size)
+                         (* stack-size (- bar 1))
+                         ;; TODO: this should be configurable setting
+                         (* 2 stack-size))]
+      (debug {: bar : stack-size : stored-amount : new-target})
+      ;; Clear the existing inventory limit
+      (inventory.set_bar)
+      ;; Setup a green wire to read the box contents and maybe disable the assembler
+      (inserter.connect_neighbour {:wire defines.wire_type.green
+                                   :target_entity box})
+      (tset behavior :circuit_mode_of_operation
+            defines.control_behavior.inserter.circuit_mode_of_operation.enable_disable)
+      (tset behavior :circuit_condition
+            {:condition {:first_signal {:type :item :name recipe.name}
+                         :constant new-target}})
+      ;; Provide an alert to the player
+      (player.create_local_flying_text {:text [""
+                                               recipe.localised_name
+                                               " < "
+                                               new-target]
+                                        :position inserter.position})
+      ;; Return true as feedback has been provided
+      true)))
 
 (fn modify-box [player box inserter]
   (let [recipe (inserter.pickup_target.get_recipe)]
     (when recipe
       (tset box :storage_filter (. game.item_prototypes recipe.name))
-      (player.create_local_flying_text {:text [""
-                                               "Filter: "
-                                               recipe.localised_name]
-                                        :position box.position})
-      (modify-inserter box inserter recipe))))
+      (when (not (modify-inserter player box inserter recipe))
+        (player.create_local_flying_text {:text [""
+                                                 "Filter: "
+                                                 recipe.localised_name]
+                                          :position box.position})))))
 
 (fn on-build [event]
   (let [box event.created_entity
@@ -50,13 +74,18 @@
                                                         :type :inserter
                                                         ; 2.0 to reach a long inserter
                                                         :radius 2.0})
+                       ;; Keep only (hopefully one) inserters that
+                       ;; targets the box and picks up from
+                       ;; an assembler.
                        (filter #(and (targets-entity? surface box $)
                                      (= :assembling-machine
-                                        (?. $ :pickup_target :type)))))]
-    (debug {:inserter-count (length inserters)})
-    (when (= 1 (length inserters))
-      (modify-box player box (. inserters 1))
-      nil)))
+                                        (?. $ :pickup_target :type)))))
+        _ (debug {:inserter-count (length inserters)})
+        inserter (when (= 1 (length inserters))
+                   (. inserters 1))]
+    (when inserter
+      (player.play_sound {:path :utility/confirm})
+      (modify-box player box inserter))))
 
 (script.on_event defines.events.on_built_entity on-build
                  [{:filter :name :name :logistic-chest-storage}])
