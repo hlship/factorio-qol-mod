@@ -68,10 +68,40 @@ script.on_event(defines.events.on_built_entity, function(event)
     if recipe == nil then return end
 
     -- Set the filter from the inserter's recipe
-    
+
     box.storage_filter =  game.item_prototypes[recipe.name]
 
-    log(line {recipe=recipe.name})
+    player.create_local_flying_text {text={"", "Filter: ",
+                                           recipe.localised_name},
+                                     position=box.position}
+
+    -- If the inserter does not yet have a green circuit, then we can do a lot more.
+    
+    local network = inserter.get_circuit_network(defines.wire_type.green)
+
+    
+    local inventory = box.get_inventory(defines.inventory.chest)
+    local slots = inventory.get_bar()
+    local stack_size = box.storage_filter.stack_size
+    local stored_amount = inventory.get_item_count(recipe.name)
+
+    log(line {contents=inventory.get_contents(),
+              bar=slots,
+              slots=#inventory,
+              stack_size=stack_size,
+              stored=stored_amount})
+ 
+    local limit = nil
+
+
+    -- When the game replaces an existing container, it copies over
+    -- the container's inventory, including its bar.
+
+
+
+
+    inventory.set_bar() -- disable bar
+
 
 
 end, {{filter="name", name="logistic-chest-storage"}}) 
