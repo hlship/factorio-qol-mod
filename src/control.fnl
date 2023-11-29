@@ -32,7 +32,7 @@
           stored-amount (inventory.get_item_count recipe.name)
           ;; How many should we allow the inserter to move over?  If there's limit
           ;; via inventory bar, use that.
-          new-target (if (<= bar stack-size)
+          new-target (if (< bar stack-size)
                          (* stack-size (- bar 1))
                          ;; TODO: this should be configurable setting
                          (* 2 stack-size))]
