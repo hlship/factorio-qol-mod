@@ -1,0 +1,13 @@
+{
+ :paths ["bb"]
+ :pods {org.babashka/fswatcher {:version "0.0.5"}}
+ :tasks
+ {:requires ([build :as b])
+  
+  build (b/compile-to-lua)
+
+  watch (b/watch)
+
+  clean (b/clean)
+  }
+}

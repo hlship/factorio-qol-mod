@@ -77,9 +77,19 @@ script.on_event(defines.events.on_built_entity, function(event)
 
     -- If the inserter does not yet have a green circuit, then we can do a lot more.
     
-    local network = inserter.get_circuit_network(defines.wire_type.green)
+    local behavior = inserter.get_control_behavior()
 
-    
+    if behavior ~= nil then return end
+
+    behavior = inserter.get_or_create_control_behavior()
+    inserter.connect_neighbor {wire=defines.wire_type.green, target_entity=box}
+
+    behavior.circuit_mode_of_operation = defines.control_behavior.inserter.circuit_mode_of_operation.enable_disable
+    behavior.circuit_condition = {condition={
+      first_signal="item",
+      constant=100
+    }}
+
     local inventory = box.get_inventory(defines.inventory.chest)
     local slots = inventory.get_bar()
     local stack_size = box.storage_filter.stack_size
@@ -91,14 +101,11 @@ script.on_event(defines.events.on_built_entity, function(event)
               stack_size=stack_size,
               stored=stored_amount})
  
-    local limit = nil
-
+    -- TODO: When no real bar
+    local limit = stack_size * (slots - 1)
 
     -- When the game replaces an existing container, it copies over
-    -- the container's inventory, including its bar.
-
-
-
+    -- the container's inventory, including its bar
 
     inventory.set_bar() -- disable bar
 
