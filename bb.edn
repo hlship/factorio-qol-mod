@@ -1,6 +1,5 @@
 {
  :paths ["bb"]
- :pods {org.babashka/fswatcher {:version "0.0.5"}}
  :tasks
  {:requires ([build :as b])
   

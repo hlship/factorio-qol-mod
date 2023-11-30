@@ -88,5 +88,3 @@
 ;; Only applies to storage chests, as only storage chests have a storage_filter.
 (script.on_event defines.events.on_built_entity on-build
                  [{:filter :name :name :logistic-chest-storage}])
-
-
