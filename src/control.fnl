@@ -52,7 +52,7 @@
       ;; Provide an alert to the player
       (player.play_sound {:path :utility/wire_connect_pole})
       (player.create_local_flying_text {:text [:hls-qol.limit-set
-                                               recipe.localised_name
+                                               (.. "[item=" recipe.name "]")
                                                new-target]
                                         :position inserter.position})
       ;; Return true as feedback has been provided
@@ -64,7 +64,7 @@
       (tset box :storage_filter (. game.item_prototypes recipe.name))
       (when (not (modify-inserter player box inserter recipe))
         (player.create_local_flying_text {:text [:hls-qol.filter-added
-                                                 recipe.localised_name]
+                                                 (.. "[item=" recipe.name "]")]
                                           :position box.position})))))
 
 (fn on-build [event]
