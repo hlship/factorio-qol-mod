@@ -69,7 +69,7 @@
 
 (fn on-build [event]
   (let [box event.created_entity
-        player (game.get_player event.player_index)
+        player box.last_user
         surface player.surface
         inserters (->> (surface.find_entities_filtered {:position box.position
                                                         :type :inserter
@@ -88,7 +88,13 @@
       (player.play_sound {:path :utility/confirm})
       (modify-box player box inserter))))
 
+(fn on-robot-build [event]
+  (when event.created_entity.last_user.mod_settings.hls-qol-robot-enabled.value
+    (on-build event)))
+
+(local filters [{:filter :name :name :logistic-chest-storage}])
+
 ;; Only applies to storage chests, as only storage chests have a storage_filter.
-(script.on_event defines.events.on_built_entity on-build
-                 [{:filter :name :name :logistic-chest-storage}])
+(script.on_event defines.events.on_built_entity on-build filters)
+(script.on_event defines.events.on_robot_built_entity on-robot-build filters)
 
