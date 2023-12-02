@@ -35,8 +35,9 @@
           ;; via inventory bar, use that.
           new-target (if (< bar stack-size)
                          (* stack-size (- bar 1))
-                         ;; TODO: this should be configurable setting
-                         (* 2 stack-size))]
+                         ;; There was no limit, so pretend there was one based on the setting.
+                         (* player.mod_settings.hls-qol-default-stack-size.value
+                            stack-size))]
       (debug {: bar : stack-size : stored-amount : new-target})
       ;; Clear the existing inventory limit
       (inventory.set_bar)
