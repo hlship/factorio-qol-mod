@@ -1,5 +1,6 @@
 (macro debug [val]
-  `(log (serpent.line ,val)))
+  `(when settings.global.hls-qol-debug-enabled.value
+     (log (serpent.line ,val))))
 
 (debug {:message "Loading HiTech's QoL Mod"})
 
@@ -48,8 +49,8 @@
             {:condition {:first_signal {:type :item :name recipe.name}
                          :constant new-target}})
       ;; Provide an alert to the player
-      (player.play_sound {:path "utility/wire_connect_pole"})
-      (player.create_local_flying_text {:text ["hls-qol.limit-set"
+      (player.play_sound {:path :utility/wire_connect_pole})
+      (player.create_local_flying_text {:text [:hls-qol.limit-set
                                                recipe.localised_name
                                                new-target]
                                         :position inserter.position})
@@ -61,7 +62,8 @@
     (when recipe
       (tset box :storage_filter (. game.item_prototypes recipe.name))
       (when (not (modify-inserter player box inserter recipe))
-        (player.create_local_flying_text {:text ["hls-qol.filter-added" recipe.localised_name]
+        (player.create_local_flying_text {:text [:hls-qol.filter-added
+                                                 recipe.localised_name]
                                           :position box.position})))))
 
 (fn on-build [event]
@@ -88,3 +90,4 @@
 ;; Only applies to storage chests, as only storage chests have a storage_filter.
 (script.on_event defines.events.on_built_entity on-build
                  [{:filter :name :name :logistic-chest-storage}])
+
