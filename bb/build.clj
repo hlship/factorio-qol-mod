@@ -3,7 +3,7 @@
             [babashka.process :as p]
             [cheshire.core :as cheshire]))
 
-(def mod-dir "out/lua")
+(def mod-dir "out/build/mod")
 
 (defn clean []
   (fs/delete-tree "out"))
@@ -52,4 +52,4 @@
                     :version)
         zip-file (str "out/hitech-qol_" version ".zip")]
     (println "Creating:" zip-file)
-    (fs/zip zip-file [mod-dir] {:root mod-dir})))
+    (fs/zip zip-file ["out/build"] {:root "out/build"})))
