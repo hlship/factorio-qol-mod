@@ -3,10 +3,12 @@
  :tasks
  {:requires ([build :as b])
   
-  build (b/compile-to-lua)
+  build (build-module)
 
   watch (b/watch)
 
   clean (b/clean)
+
+  zip (b/zip)
   }
 }

@@ -16,9 +16,9 @@ Prior to this point, you will use the inventory bar to limit the production of i
 you might want 50 radar dishes handy (one stack), not 2400 (48 stacks). 
 This is especially important for items that are upcycled into other items, such as yellow transport belts
 into red transport belts; as you tear up your base to upgrade your transport belts, you want the robots
-to store the old belts where they can be upcycle, rather than building new belts entirely.
+to store the old belts where they can be upcycled, rather than building new belts entirely.
 
-The manual process is:
+The manual upgrade process is:
 - decide how many of the item you want to product (usually, one or two stacks)
 - figure out how many items per stack
 - use the circuit network to disable the inserter if the container already has that many
