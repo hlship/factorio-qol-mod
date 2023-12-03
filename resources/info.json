@@ -1,7 +1,7 @@
 { 
     "name": "hitech-qol",
     "title": "HiTech's Quality of Life Improvements",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": "Howard M. Lewis Ship",
     "factorio_version": "1.1",
     "dependencies": ["base >= 1.1"],

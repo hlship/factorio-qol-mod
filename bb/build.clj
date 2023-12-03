@@ -18,7 +18,7 @@
   (fs/delete-tree mod-dir)
   (fs/create-dirs mod-dir)
   (doseq [f (fs/glob "src" "**.fnl")]
-    (let [out-path (str "out/lua/"
+    (let [out-path (str mod-dir "/"
                         (-> f
                             fs/strip-ext
                             fs/file-name)
