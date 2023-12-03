@@ -5,6 +5,10 @@
 (defn clean []
   (fs/delete-tree "out"))
 
+(def allowed-globals
+  (str "game,script,remote,commands,settings,rcon,rendering,defines,global,data"
+       ",log,localized_print,table_size,serpent"))
+
 (defn compile-to-lua
   "Compiles source Fennel files in `src` to Lua files in `target/lua`, and copies resources."
   []
@@ -19,7 +23,9 @@
           in-path (str f)]
       (println "Compiling" in-path "...")
       (let [proc (p/process {:out out-path
-                             :inherit true} "fennel --correlate --compile" in-path)
+                             :inherit true} "fennel --correlate --compile" 
+                            "--globals" allowed-globals
+                            in-path )
             exit (-> proc deref :exit)]
         (when-not (zero? exit)
           (println (str "Error compiling " in-path ":" exit)) ) )))
