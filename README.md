@@ -19,14 +19,14 @@ into red transport belts; as you tear up your base to upgrade your transport bel
 to store the old belts where they can be upcycled, rather than building new belts entirely.
 
 The manual upgrade process is:
-- decide how many of the item you want to product (usually, one or two stacks)
+- decide how many of the item you want to produce (usually, one or two stacks)
 - figure out how many items per stack
 - use the circuit network to disable the inserter if the container already has that many
 - upgrade the container to a logistics storage container
 - view the container, set its filter to what the assembler produces, and remove the inventory limit bar
 
-This mod simply automates this activity; you drop of logistics storage container chest over
-an existing chest, and the mod will do the above steps for you, and provide a little feedback when it works.
+This mod simply automates this activity; you drop a logistics storage container chest over
+any existing chest, and the mod will do the above steps for you, and provide a little feedback when it works.
 
 Note: if the inserter has any red or green wire attachments, then the mod will _not_ introduce
 a limit. It will still set the item filter on the container.
