@@ -21,7 +21,7 @@
         (table.insert result value)))
     result))
 
-(fn modify-inserter [player box inserter recipe]
+(fn modify-inserter [player box inserter item-name]
   ;; Don't modify inserters that already have any circuit connections
   (let [green-connector (inserter.get_wire_connector defines.wire_connector_id.circuit_green false)
         red-connector (inserter.get_wire_connector defines.wire_connector_id.circuit_red false)]
@@ -30,8 +30,8 @@
       (let [behavior (inserter.get_or_create_control_behavior)
             inventory (box.get_inventory defines.inventory.chest)
             bar (inventory.get_bar)
-            stack-size (. prototypes.item recipe.name :stack_size)
-            stored-amount (inventory.get_item_count recipe.name)
+            stack-size (. prototypes.item item-name :stack_size)
+            stored-amount (inventory.get_item_count item-name)
             ;; How many should we allow the inserter to move over?  If there's limit
             ;; via inventory bar, use that.
             new-target (if (< bar stack-size)
@@ -48,24 +48,27 @@
           (inserter-connector.connect_to box-connector false defines.wire_origin.script))
         (tset behavior :circuit_enable_disable true)
         (tset behavior :circuit_condition
-              {:first_signal {:name recipe.name}
+              {:first_signal {:name item-name}
                :constant new-target})
         ;; Provide an alert to the player
         (player.play_sound {:path :utility/wire_connect_pole})
         (player.create_local_flying_text {:text [:hls-qol.limit-set
-                                                 (.. "[item=" recipe.name "]")
+                                                 (.. "[item=" item-name "]")
                                                  new-target]
                                           :position inserter.position})
         ;; Return true as feedback has been provided
         true))))
 
 (fn modify-box [player box inserter]
-  (let [recipe (inserter.pickup_target.get_recipe)]
-    (when recipe
-      (tset box :storage_filter recipe.name)
-      (when (not (modify-inserter player box inserter recipe))
+  (let [recipe (inserter.pickup_target.get_recipe)
+        ;; Recipe name may differ from item name (e.g. solid-fuel-from-petroleum-gas
+        ;; produces solid-fuel), so extract the actual product item name.
+        item-name (?. recipe :products 1 :name)]
+    (when item-name
+      (tset box :storage_filter item-name)
+      (when (not (modify-inserter player box inserter item-name))
         (player.create_local_flying_text {:text [:hls-qol.filter-added
-                                                 (.. "[item=" recipe.name "]")]
+                                                 (.. "[item=" item-name "]")]
                                           :position box.position})))))
 
 (fn on-build [event]
