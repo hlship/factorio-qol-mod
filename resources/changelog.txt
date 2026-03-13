@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 03-12-2026
+  Features:
+    - Ported to Factorio 2.0
+    - Updated wire connection API to use wire connectors
+    - Updated circuit condition API for 2.0 control behavior changes
+    - Updated entity filter name from logistic-chest-storage to storage-chest
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 03-12-2023
   Features:

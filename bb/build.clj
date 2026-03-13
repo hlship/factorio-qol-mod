@@ -9,8 +9,8 @@
   (fs/delete-tree "out"))
 
 (def allowed-globals
-  (str "game,script,remote,commands,settings,rcon,rendering,defines,global,data"
-       ",log,localized_print,table_size,serpent"))
+  (str "game,script,remote,commands,settings,rcon,rendering,defines,global,storage,data"
+       ",prototypes,log,localized_print,table_size,serpent"))
 
 (defn build-module
   "Compiles source Fennel files in `src` to Lua files in `target/lua`, and copies resources."
